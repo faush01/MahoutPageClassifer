@@ -1,0 +1,166 @@
+<html>
+<head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    // Load the Visualization API and the piechart package.
+    google.load('visualization', '1', {'packages':['corechart']});
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.setOnLoadCallback(buildCharts);
+
+    function buildCharts() {
+       drawChart('Results', 'results_roc.json', 'chart_div1');
+       drawChartData('Total Error Rate', 'results_error.json', 'chart_div2');
+       drawChartData('Score Error Rate', 'results_error_score.json', 'chart_div3');
+       drawChartData('Score Counts', 'results_score_count.json', 'chart_div4');
+       drawChartData('Score Percent', 'results_score_percent.json', 'chart_div5');
+    }
+    
+    function drawChartData(title, sourceData, chartDiv) {
+        var jsonData = $.ajax({
+            url: sourceData,
+            dataType:"json",
+            async: false
+        }).responseText;
+
+        if (typeof jsonData == "string") jsonData = JSON.parse(jsonData);
+        //console.log(JSON.stringify(jsonData));
+
+        // Create our data table out of JSON data loaded from server.
+        var data = new google.visualization.DataTable();
+
+        var numSets = 0; for (var set in jsonData) numSets++;
+
+        data.addColumn('string', 'score');
+
+        var setNames = [];
+        for (var set in jsonData) {
+            setNames.push(set);
+        }
+        setNames.sort();
+        setNames.reverse();
+        
+        var rows = [];
+        var setIndex = 1;
+        for (var i = 0; i < setNames.length; i++) {
+            var set = setNames[i];
+            data.addColumn('number', set);
+            var setRows = jsonData[set];
+            var r = 0;
+            for (r = 0; r < setRows.length; r++) {
+                var setRow = setRows[r];
+                if(!rows[r]) {
+                    rows[r] = [];
+                }
+                rows[r][0] = setRow.label;
+                rows[r][setIndex] = setRow.value;
+                //console.log("created row x=" + setRow.label + ", y=" + setRow.value + " @ col" + setIndex);
+            }
+
+            setIndex++;
+        }
+        //console.log(JSON.stringify(rows));
+        data.addRows(rows);
+        
+        /*
+        data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+            ['Mushrooms', 3],
+            ['Onions', 1],
+            ['Olives', 1], 
+            ['Zucchini', 1],
+            ['Pepperoni', 2]
+        ]);
+        */
+        
+        var options = {
+            title: title,
+            lineWidth: 1,
+            width: 1100,
+            height: 850
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById(chartDiv));
+
+        chart.draw(data, options);
+    }    
+
+    function drawChart(title, sourceData, chartDiv) {
+        var jsonData = $.ajax({
+            url: sourceData,
+            dataType:"json",
+            async: false
+        }).responseText;
+
+        if (typeof jsonData == "string") jsonData = JSON.parse(jsonData);
+        //console.log(JSON.stringify(jsonData));
+
+        // Create our data table out of JSON data loaded from server.
+        var data = new google.visualization.DataTable();
+
+        var numSets = 0; for (var set in jsonData) numSets++;
+
+        data.addColumn('number', 'TN');
+
+        var setNames = [];
+        for (var set in jsonData) {
+            setNames.push(set);
+        }
+        setNames.sort();
+        setNames.reverse();
+        
+        var rows = [];
+        var setIndex = 1;
+        //for (var set in setNames) {
+        for (var i = 0; i < setNames.length; i++) {
+            var set = setNames[i];
+            data.addColumn('number', set);
+            var setRows = jsonData[set];
+            var r = 0;
+            for (r = 0; r < setRows.length; r++) {
+                var setRow = setRows[r];
+                var row = [];
+                var j;
+                for (j = 0; j <= numSets; j++) row[j] = null;
+                row[0] = setRow.x;
+                row[setIndex] = setRow.y;
+                //console.log("created row x=" + setRow.x + ", y=" + setRow.y + " @ col" + setIndex);
+                rows.push(row);
+            }
+
+            setIndex++;
+        }
+        //console.log(JSON.stringify(rows));
+        data.addRows(rows);
+
+        var options = {
+            title: title,
+            lineWidth: 1,
+            width: 1100,
+            height: 850
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById(chartDiv));
+
+        chart.draw(data, options);
+    }
+
+
+    </script>
+</head>
+
+<body>
+
+<div id="chart_div1"></div>
+<div id="chart_div2"></div>
+<div id="chart_div3"></div>
+<div id="chart_div4"></div>
+<div id="chart_div5"></div>
+
+</body>
+</html>

@@ -99,7 +99,7 @@ public class GenericLR {
             if(dataPath.exists() == false) {
                 dataPath.mkdirs();
             }
-            FileWriter fr = new FileWriter("Results\\TestResults_" + y + ".tab");
+            FileWriter fr = new FileWriter("Results\\TestResults_" + y + ".tsv");
 
             for (SiteFeatures testCall : testItems) {
                 Vector results = lr.classifyFull(testCall.getFeatureSetVector());
