@@ -39,11 +39,11 @@ public class FeatureExtractor {
             dataPath.mkdirs();
         }
         FileWriter fr = new FileWriter("ExtractedFeatures\\Features.tsv");
-        List<SiteInfo> siteList = loadSiteList("C:\\Development\\SiteLoader\\WebSiteDataSet\\SiteDataSet.csv");
+        List<SiteInfo> siteList = loadSiteList("..\\SiteLoader\\WebSiteDataSet\\SiteDataSet.csv");
 
         saveSiteList("ExtractedFeatures\\SiteList.tsv", siteList);
 
-        String baseDataPath = "C:\\Development\\SiteLoader\\SiteDataStore\\";
+        String baseDataPath = "..\\SiteLoader\\SiteDataStore\\";
 
         for(SiteInfo site : siteList) {
 
